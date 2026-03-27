@@ -37,7 +37,7 @@ jobs:
 
       - name: Upload APK
         # This MUST be a separate step starting with "uses"
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: release-apk
           # Updated path for modern Flutter versions
