@@ -30,21 +30,38 @@ jobs:
       - name: Build Flutter app
         # Use the pipe "|" to run multiple commands in one step
         run: |
-          # 1. Prepare the Dart entry point
+          # # 1. Prepare the Dart entry point
+          # mkdir -p lib
+          # cp bin/my_dart_action_demo.dart lib/main.dart
+          
+          # # 2. DELETE any existing/broken android folder
+          # rm -rf android
+          
+          # # 3. FORCE Flutter to create the missing Android infrastructure
+          # # This creates the Gradle files the builder is complaining about
+          # flutter create --project-name=my_dart_action_demo --platforms=android --overwrite .
+          
+          # # 4. Standard build sequence
+          # flutter pub get
+          # dart format .
+          # flutter build apk --release
+          
+          # 1. Create the base infrastructure (This might create a default main.dart)
+          flutter create --project-name=my_dart_action_demo --platforms=android --overwrite .
+          
+          # 2. FORCE your code back into the project
+          # This overwrites the "Counter App" with YOUR "Hello World"
           mkdir -p lib
           cp bin/my_dart_action_demo.dart lib/main.dart
           
-          # 2. DELETE any existing/broken android folder
-          rm -rf android
+          # 3. Verify the file content in the logs (for your peace of mind)
+          echo "--- Content of lib/main.dart ---"
+          cat lib/main.dart
+          echo "--------------------------------"
           
-          # 3. FORCE Flutter to create the missing Android infrastructure
-          # This creates the Gradle files the builder is complaining about
-          flutter create --project-name=my_dart_action_demo --platforms=android --overwrite .
-          
-          # 4. Standard build sequence
+          # 4. Build the APK using YOUR code
           flutter pub get
-          dart format .
-          flutter build apk --release
+          flutter build apk --release          
 
       - name: Upload APK
         # This MUST be a separate step starting with "uses"
