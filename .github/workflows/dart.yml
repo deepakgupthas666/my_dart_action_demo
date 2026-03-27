@@ -27,38 +27,18 @@ jobs:
         with:
           channel: 'stable'
       
-      # 3. Use --overwrite to ensure the template files (lib/main.dart) are created
-      # - name: Create or Repair Flutter Project
-      #   run: |
-      #     flutter create --project-name=my_dart_action_demo --platforms=android --overwrite .
-          
-      #     # This will confirm the file exists in the logs
-      #     ls -R lib/
-      - name: Execute Shadow Build
-        run: |
-          # 1. Create the 'wrapper' in a hidden folder
-          flutter create --project-name=app_engine --platforms=android .shadow_build
-          
-          # 2. Wipe the engine's default code
-          rm -rf .shadow_build/lib
-          
-          # 3. Copy YOUR code into the engine
-          # This assumes your 'lib' folder is in the root of your repo
-          cp -r lib .shadow_build/lib
-          
-          # 4. If you have a custom pubspec, overwrite the engine's one
-          if [ -f pubspec.yaml ]; then
-            cp pubspec.yaml .shadow_build/pubspec.yaml
-          fi
-
-      - name: Build APK
-        working-directory: .shadow_build
+      - name: Build Flutter app
+        # Use the pipe "|" to run multiple commands in one step
         run: |
           flutter pub get
+          dart format --set-exit-if-changed .
+          flutter analyze .
           flutter build apk --release
 
       - name: Upload APK
+        # This MUST be a separate step starting with "uses"
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
-          path: .shadow_build/build/app/outputs/flutter-apk/app-release.apk
+          # Updated path for modern Flutter versions
+          path: build/app/outputs/flutter-apk/app-release.apk
