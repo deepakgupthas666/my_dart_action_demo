@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '12.x'
+          java-version: '17.x'
 
       # 2. Set up Flutter (includes the Dart SDK)
       - name: Set up Flutter
