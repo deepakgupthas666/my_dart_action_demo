@@ -28,23 +28,23 @@ jobs:
           channel: 'stable'
       
       # 3. Use --overwrite to ensure the template files (lib/main.dart) are created
-      # - name: Create or Repair Flutter Project
-      #   run: |
-      #     flutter create --project-name=my_dart_action_demo --platforms=android --overwrite .
-          
-      #     # This will confirm the file exists in the logs
-      #     ls -R lib/
-      - name: Repair and Create Flutter Project
+      - name: Create or Repair Flutter Project
         run: |
-          rm -rf android
           flutter create --project-name=my_dart_action_demo --platforms=android --overwrite .
-          if [ ! -f lib/main.dart ]; then
-            mkdir -p lib
-            cat <<EOF > lib/main.dart
-            import 'package:flutter/material.dart';
-            void main() => runApp(MaterialApp(home: Scaffold(body: Center(child: Text('Success!')))));
-            EOF
-          fi
+          
+          # This will confirm the file exists in the logs
+          ls -R lib/
+      # - name: Repair and Create Flutter Project
+      #   run: |
+      #     rm -rf android
+      #     flutter create --project-name=my_dart_action_demo --platforms=android --overwrite .
+      #     if [ ! -f lib/main.dart ]; then
+      #       mkdir -p lib
+      #       cat <<EOF > lib/main.dart
+      #       import 'package:flutter/material.dart';
+      #       void main() => runApp(MaterialApp(home: Scaffold(body: Center(child: Text('Success!')))));
+      #       EOF
+      #     fi
 
       # 4. Build the Release APK (Much smaller and faster)
       - name: Build APK
