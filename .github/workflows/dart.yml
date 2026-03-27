@@ -34,26 +34,25 @@ jobs:
           
       #     # This will confirm the file exists in the logs
       #     ls -R lib/
-      - name: Prepare Build Shell
+      - name: Execute Shadow Build
         run: |
-          # 1. Create a "blank" project in a temp folder
-          flutter create --project-name=engine --platforms=android _build_shell
+          # 1. Create the 'wrapper' in a hidden folder
+          flutter create --project-name=app_engine --platforms=android .shadow_build
           
-          # 2. Delete the temp project's 'lib' folder
-          rm -rf _build_shell/lib
+          # 2. Wipe the engine's default code
+          rm -rf .shadow_build/lib
           
-          # 3. Copy YOUR 'lib' folder from the repo into the shell
-          # This ensures YOUR code is what gets built.
-          cp -r lib _build_shell/lib
+          # 3. Copy YOUR code into the engine
+          # This assumes your 'lib' folder is in the root of your repo
+          cp -r lib .shadow_build/lib
           
-          # 4. Copy YOUR pubspec if you have one, otherwise use the engine's
+          # 4. If you have a custom pubspec, overwrite the engine's one
           if [ -f pubspec.yaml ]; then
-            cp pubspec.yaml _build_shell/pubspec.yaml
+            cp pubspec.yaml .shadow_build/pubspec.yaml
           fi
 
       - name: Build APK
-        # We run the build INSIDE the shell where your code now lives
-        working-directory: _build_shell
+        working-directory: .shadow_build
         run: |
           flutter pub get
           flutter build apk --release
@@ -61,5 +60,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: my-app-release
-          path: _build_shell/build/app/outputs/flutter-apk/app-release.apk
+          name: release-apk
+          path: .shadow_build/build/app/outputs/flutter-apk/app-release.apk
