@@ -42,11 +42,11 @@ jobs:
           
           # If main.dart is missing, create a basic "Hello World"
           if [ ! -f lib/main.dart ]; then
-                    cat <<EOF > lib/main.dart
-          import 'package:flutter/material.dart';
+          cat <<EOF > lib/main.dart
+import 'package:flutter/material.dart';
 
-          void main() => runApp(const MaterialApp(home: Scaffold(body: Center(child: Text('Hello World')))));
-          EOF
+void main() => runApp(const MaterialApp(home: Scaffold(body: Center(child: Text('Hello World')))));
+EOF
           fi
 
           # If pubspec is missing, create the project structure
