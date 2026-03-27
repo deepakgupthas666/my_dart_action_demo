@@ -34,16 +34,28 @@ jobs:
           
       #     # This will confirm the file exists in the logs
       #     ls -R lib/
-      - name: Initialize Flutter Project (If needed)
+      # 3. Ensure the source code actually exists before building
+      - name: Ensure lib/main.dart exists
         run: |
-          if [ ! -f pubspec.yaml ]; then
-            flutter create --project-name=my_dart_action_demo --platforms=android .
-          else
-            echo "Project already exists, skipping creation to preserve custom code."
-          fi      
+          # If the directory doesn't exist, create it
+          mkdir -p lib
+          
+          # If main.dart is missing, create a basic "Hello World"
+          if [ ! -f lib/main.dart ]; then
+            cat <<EOF > lib/main.dart
+            import 'package:flutter/material.dart';
 
-      - name: Install dependencies
-        run: flutter pub get
+            void main() => runApp(const MaterialApp(home: Scaffold(body: Center(child: Text('Hello World')))));
+            EOF
+          fi
+
+          # If pubspec is missing, create the project structure
+          if [ ! -f pubspec.yaml ]; then
+            flutter create --project-name=my_dart_action_demo --platforms=android --overwrite .
+          fi
+          
+          # Debug: List the files so we can see them in the logs
+          ls -R lib/
 
       # 4. Build the Release APK (Much smaller and faster)
       - name: Build APK
