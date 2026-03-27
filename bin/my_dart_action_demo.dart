@@ -1,5 +1,14 @@
-import 'package:my_dart_action_demo/my_dart_action_demo.dart' as my_dart_action_demo;
+import 'package:flutter/material.dart';
 
-void main(List<String> arguments) {
-  print('Hello world: ${my_dart_action_demo.calculate()}!');
+void main() {
+  runApp(const MaterialApp(
+    home: Scaffold(
+      body: Center(
+        child: Text(
+          'Hello from Melbourne, FL!', 
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+      ),
+    ),
+  ));
 }
