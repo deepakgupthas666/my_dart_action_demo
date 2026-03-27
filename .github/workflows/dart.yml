@@ -28,12 +28,19 @@ jobs:
           channel: 'stable'
       
       # 3. Use --overwrite to ensure the template files (lib/main.dart) are created
-      - name: Create or Repair Flutter Project
-        run: |
-          flutter create --project-name=my_dart_action_demo --platforms=android --overwrite .
+      # - name: Create or Repair Flutter Project
+      #   run: |
+      #     flutter create --project-name=my_dart_action_demo --platforms=android --overwrite .
           
-          # This will confirm the file exists in the logs
-          ls -R lib/
+      #     # This will confirm the file exists in the logs
+      #     ls -R lib/
+      - name: Initialize Flutter Project (If needed)
+        run: |
+          if [ ! -f pubspec.yaml ]; then
+            flutter create --project-name=my_dart_action_demo --platforms=android .
+          else
+            echo "Project already exists, skipping creation to preserve custom code."
+          fi      
 
       - name: Install dependencies
         run: flutter pub get
