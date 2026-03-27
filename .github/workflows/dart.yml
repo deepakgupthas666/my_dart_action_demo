@@ -1,0 +1,49 @@
+name: Flutter APK Build
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 1. APKs require Java (the Android build toolchain needs it)
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # 2. Set up Flutter (includes the Dart SDK)
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      # 3. Create the project if your repo is empty
+      - name: Create Flutter Project if missing
+        run: |
+          if [ ! -f pubspec.yaml ]; then
+            flutter create . --project-name=my_dart_action_demo --platforms=android
+          fi
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # 4. Build the actual APK
+      - name: Build APK
+        run: flutter build apk --debug
+
+      # 5. Upload the file so you can download it
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-app-apk
+          path: build/app/outputs/flutter-apk/my_dart_action_demo-app-debug.apk
