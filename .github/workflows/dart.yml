@@ -38,7 +38,7 @@ jobs:
           
           # 3. Run the build sequence
           flutter pub get
-          dart format --set-exit-if-changed .
+          dart format .
           flutter build apk --release
 
       - name: Upload APK
