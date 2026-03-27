@@ -27,14 +27,14 @@ jobs:
         with:
           channel: 'stable'
 
-      # 3. Create the project if your repo is empty
+# 3. Create the project with --force to ensure lib/main.dart is generated
       - name: Create Flutter Project if missing
         run: |
           if [ ! -f pubspec.yaml ]; then
-            # We use --force to ensure lib/main.dart is created 
-            # even if .github folder already exists
             flutter create . --project-name=my_dart_action_demo --platforms=android --force
           fi
+          # Check the directory structure in the logs to be 100% sure
+          ls -R
 
       - name: Install dependencies
         run: flutter pub get
@@ -43,9 +43,10 @@ jobs:
       - name: Build APK
         run: flutter build apk --debug
 
-      # 5. Upload the file so you can download it
+      # 5. Correct the path for the artifact upload
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: my-app-apk
-          path: build/app/outputs/flutter-apk/my_dart_action_demo-app-debug.apk
+          # Standard Flutter output doesn't usually include the project name in the filename
+          path: build/app/outputs/flutter-apk/app-debug.apk
