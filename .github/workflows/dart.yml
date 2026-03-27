@@ -30,13 +30,18 @@ jobs:
       - name: Build Flutter app
         # Use the pipe "|" to run multiple commands in one step
         run: |
-          # 1. Create the 'lib' folder Flutter expects
+          # 1. Prepare the Dart entry point
           mkdir -p lib
-          
-          # 2. Copy your code from 'bin' to the expected entry point
           cp bin/my_dart_action_demo.dart lib/main.dart
           
-          # 3. Run the build sequence
+          # 2. DELETE any existing/broken android folder
+          rm -rf android
+          
+          # 3. FORCE Flutter to create the missing Android infrastructure
+          # This creates the Gradle files the builder is complaining about
+          flutter create --project-name=my_dart_action_demo --platforms=android --overwrite .
+          
+          # 4. Standard build sequence
           flutter pub get
           dart format .
           flutter build apk --release
