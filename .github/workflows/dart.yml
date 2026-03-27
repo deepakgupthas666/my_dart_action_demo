@@ -34,35 +34,32 @@ jobs:
           
       #     # This will confirm the file exists in the logs
       #     ls -R lib/
-      - name: Inject Flutter Infrastructure
+      - name: Prepare Build Shell
         run: |
-          # 1. Create a temporary project in a subfolder
-          flutter create --project-name=my_dart_action_demo --platforms=android temp_project
+          # 1. Create a "blank" project in a temp folder
+          flutter create --project-name=engine --platforms=android _build_shell
           
-          # 2. Move the required infrastructure files to the root, 
-          # but DO NOT move the 'lib' folder (preserving your code)
-          cp -rn temp_project/android .
-          cp -n temp_project/pubspec.yaml .
-          cp -n temp_project/analysis_options.yaml .
+          # 2. Delete the temp project's 'lib' folder
+          rm -rf _build_shell/lib
           
-          # 3. Clean up the temporary folder
-          rm -rf temp_project
+          # 3. Copy YOUR 'lib' folder from the repo into the shell
+          # This ensures YOUR code is what gets built.
+          cp -r lib _build_shell/lib
           
-          # 4. Final check: Ensure lib/ exists (if repo was truly empty)
-          if [ ! -d lib ]; then
-            mkdir lib
-            echo "import 'package:flutter/material.dart'; void main() => runApp(MaterialApp(home: Scaffold(body: Center(child: Text('Manual Code Success')))));" > lib/main.dart
-          fi      
+          # 4. Copy YOUR pubspec if you have one, otherwise use the engine's
+          if [ -f pubspec.yaml ]; then
+            cp pubspec.yaml _build_shell/pubspec.yaml
+          fi
 
-
-      # 4. Build the Release APK (Much smaller and faster)
       - name: Build APK
-        run: flutter build apk --release
+        # We run the build INSIDE the shell where your code now lives
+        working-directory: _build_shell
+        run: |
+          flutter pub get
+          flutter build apk --release
 
-      # 5. Update the path for the release artifact
-      - name: Upload APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: my-app-release-apk
-          # Path changes from flutter-apk/app-debug.apk to app-release.apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: my-app-release
+          path: _build_shell/build/app/outputs/flutter-apk/app-release.apk
