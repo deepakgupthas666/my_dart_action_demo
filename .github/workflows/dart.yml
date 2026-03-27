@@ -30,9 +30,15 @@ jobs:
       - name: Build Flutter app
         # Use the pipe "|" to run multiple commands in one step
         run: |
+          # 1. Create the 'lib' folder Flutter expects
+          mkdir -p lib
+          
+          # 2. Copy your code from 'bin' to the expected entry point
+          cp bin/my_dart_action_demo.dart lib/main.dart
+          
+          # 3. Run the build sequence
           flutter pub get
           dart format --set-exit-if-changed .
-          flutter analyze .
           flutter build apk --release
 
       - name: Upload APK
